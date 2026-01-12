@@ -2,34 +2,53 @@
 
 set -e
 
-echo "Setting Kafka ACLs for User:CN=application"
+echo "Setting Kafka ACLs for User:CN=user@anycompany.com
+This script will grant the following permissions:
+- Create topics
+- Write to topics
+- Read from topics
+- Read from consumer groups
+- Cannot list topics (no Describe permission)"
 
-# Allow creating topics
-echo "Granting Create permission on topics..."
 ~/kafka/bin/kafka-acls.sh --bootstrap-server $KAFKA_BROKERS --command-config kafka-admin-ssl.properties \
-  --add --allow-principal User:CN=application \
-  --operation Create --topic "*"
+  --add \
+  --allow-principal "User:CN=admin@anycompany.com" \
+  --operation All \
+  --cluster \
+  --topic '*' \
+  --group '*'
 
-# Allow writing to topics
-echo "Granting Write permission on topics..."
+# Deny cluster describe (prevents topic listing)
 ~/kafka/bin/kafka-acls.sh --bootstrap-server $KAFKA_BROKERS --command-config kafka-admin-ssl.properties \
-  --add --allow-principal User:CN=application \
-  --operation Write --topic "*"
+  --add \
+  --deny-principal "User:CN=user@anycompany.com" \
+  --operation Describe \
+  --cluster
 
-# Allow reading from topics
-echo "Granting Read permission on topics..."
-~/kafka/bin/kafka-acls.sh --bootstrap-server $KAFKA_BROKERS --command-config kafka-admin-ssl.properties \
-  --add --allow-principal User:CN=application \
-  --operation Read --topic "*"
+# 2. Allow Create at cluster level (needed to create topics)
+~/kafka/bin/kafka-acls.sh --bootstrap-server localhost:9092 \
+  --add \
+  --allow-principal "User:CN=user@anycompany.com" \
+  --operation Create \
+  --cluster
+
+# 3. Allow Read, Write, and Describe on individual topics
+~/kafka/bin/kafka-acls.sh --bootstrap-server localhost:9092 \
+  --add \
+  --allow-principal "User:CN=user@anycompany.com" \
+  --operation Read \
+  --operation Write \
+  --operation Describe \
+  --topic '*'
 
 # Allow reading from consumer groups
 echo "Granting Read permission on consumer groups..."
 ~/kafka/bin/kafka-acls.sh --bootstrap-server $KAFKA_BROKERS --command-config kafka-admin-ssl.properties \
-  --add --allow-principal User:CN=application \
+  --add --allow-principal User:CN=user@anycompany.com \
   --operation Read --group "*"
 
 echo ""
-echo "ACL setup complete for User:CN=application"
+echo "ACL setup complete for User:CN=user@anycompany.com"
 echo "Permissions granted:"
 echo "- Create topics"
 echo "- Write to topics"
