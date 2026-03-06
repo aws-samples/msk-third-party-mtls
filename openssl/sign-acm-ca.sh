@@ -67,7 +67,7 @@ openssl verify -CAfile certs/ca-cert.pem certs/acm-subordinate-ca-cert.pem
 
 # Create certificate chain for ACM
 echo "Creating certificate chain..."
-cat certs/acm-subordinate-ca-cert.pem certs/ca-cert.pem > certs/acm-ca-chain.pem
+cat certs/ca-cert.pem > certs/acm-ca-chain.pem
 
 echo ""
 echo "AWS ACM subordinate CA signing complete!"

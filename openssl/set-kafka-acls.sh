@@ -26,14 +26,14 @@ This script will grant the following permissions:
   --cluster
 
 # 2. Allow Create at cluster level (needed to create topics)
-~/kafka/bin/kafka-acls.sh --bootstrap-server localhost:9092 \
+~/kafka/bin/kafka-acls.sh --bootstrap-server $KAFKA_BROKERS --command-config kafka-admin-ssl.properties \
   --add \
   --allow-principal "User:CN=user@anycompany.com" \
   --operation Create \
   --cluster
 
 # 3. Allow Read, Write, and Describe on individual topics
-~/kafka/bin/kafka-acls.sh --bootstrap-server localhost:9092 \
+~/kafka/bin/kafka-acls.sh --bootstrap-server $KAFKA_BROKERS --command-config kafka-admin-ssl.properties \
   --add \
   --allow-principal "User:CN=user@anycompany.com" \
   --operation Read \
